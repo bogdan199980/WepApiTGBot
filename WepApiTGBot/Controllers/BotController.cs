@@ -13,7 +13,6 @@ namespace WepApiTGBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-
             TelegramBotClient client = new TelegramBotClient("1745794348:AAE0I_rNE6iDCOAWhqGK17icxJs_zkvBp_Y");
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
             {
