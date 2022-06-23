@@ -1,26 +1,3 @@
-enum TypeReference
-{
-    Equals,
-    Anymore,
-    Smaller,
-    Similar
-}
-
-enum TypeSend
-{
-    sendMessage,
-    copyMessage,
-    sendPhoto,
-    sendAudio,
-    sendVideo,
-    sendAnimation,
-    sendVoice,
-    sendMediaGroup,
-    sendLocation,
-    sendContact
-}
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
