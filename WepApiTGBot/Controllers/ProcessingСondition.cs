@@ -37,30 +37,5 @@ namespace WepApiTGBot.Controllers
 
         }
 
-        public string GetOperations()
-        {
-
-            if (Reference == TypeReference.Equals)
-            {
-                return "==";
-            }
-            else if (Reference == TypeReference.Anymore)
-            {
-                return "==";
-            }
-            else if (Reference == TypeReference.Similar)
-            {
-                return ">";
-            }
-            else if (Reference == TypeReference.Smaller)
-            {
-                return "<";
-            }
-
-            return "==";
-
-        }
-
-
     }
 }

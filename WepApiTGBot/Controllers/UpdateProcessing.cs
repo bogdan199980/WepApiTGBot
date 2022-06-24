@@ -20,5 +20,10 @@ namespace WepApiTGBot.Controllers
         List<ProcessingСondition> Сonditions = new List<ProcessingСondition>();
       
 
+        public void ProcessingIncomingUpdate(Update update)
+        {
+
+        }
+
     }
 }
