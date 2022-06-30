@@ -11,31 +11,6 @@ using DynamicExpresso;
 
 namespace WepApiTGBot.Controllers
 {
-    public class ProcessingСondition
-    {
-        public object RightValue;
-        public TypeReference Reference;
-        public string LeftValue;
-        AccumulatedData accumulatedData;
-
-        public bool MakeComparison()
-        {
-            Interpreter interpreter = new Interpreter().SetVariable("Update", accumulatedData.Update);
-            accumulatedData.Update.Equals(interpreter);
-            string expression;
-            if (Reference == TypeReference.Equals)
-            {
-                expression = "Update." + LeftValue + ".Equals(RightValue)";
-            }
-            else
-            {
-                expression = "Update." + LeftValue + " " + GetOperations() + " RightValue";
-            }
-
-            Lambda parsedExpression = interpreter.Parse(expression, new Parameter("RightValue", RightValue));
-            return (bool)parsedExpression.Invoke();
-
-        }
-
-    }
+   
+   
 }
