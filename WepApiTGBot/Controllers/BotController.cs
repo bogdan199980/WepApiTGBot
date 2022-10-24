@@ -6,6 +6,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramClass;
+
+
 // ngrok http --host-header=localhost 5056
 namespace WepApiTGBot.Controllers
 {
@@ -13,59 +16,63 @@ namespace WepApiTGBot.Controllers
     [Route("api/bot")]
     public class BotController : ControllerBase
     {
-        private List<UpdateProcessing> UpdateProcessings = new();
+        public ConfigurationBot ConfBot;
+        public ApplicationContext DbUser;
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-            AccumulatedData data = new AccumulatedData(update);
-
-            TelegramBotClient client = new TelegramBotClient("1745794348:AAE0I_rNE6iDCOAWhqGK17icxJs_zkvBp_Y");
-            if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+            AccumulatedData accumulatedData = new AccumulatedData(update, ConfBot);
+            //    var Users = DbUser.Users.Where(b => b.id == accumulatedData.UserTG.Id);  
+            UserSetting user = DbUser.Users.Where(s => s.id == accumulatedData.UserTG.Id).FirstOrDefault<UserSetting>();
+            if (user == null)
             {
-                await client.SendTextMessageAsync(update.Message.From.Id, "answer");
+                user = new UserSetting()
+                {
+                    id = accumulatedData.UserTG.Id,
+                    is_bot = accumulatedData.UserTG.IsBot,
+                    language_code = accumulatedData.UserTG.LanguageCode,
+                    username = accumulatedData.UserTG.Username,
+                    LastMessegeId = 0,
+                    LastSendingUpdateProcessing = 0
+                };
+                try
+                {
+                    DbUser.Users.Add(user);
+                    DbUser.SaveChanges();
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+
             }
+
+            accumulatedData.UserTGSetting = user;
+            accumulatedData.ProcessingIncomingUpdate(update, ConfBot.UpdateProcessings);
+            SaveUserSetting(accumulatedData);
+
             return Ok();
         }
 
-   //     public BotController(IConfiguration configuration)
-   //     {
-   //         var config = configuration;
-   //     }
-
-        public BotController(IOptions<List<UpdateProcessing>> settings)
+        private void SaveUserSetting(AccumulatedData accumulatedData)
         {
-            UpdateProcessings = settings.Value;
-
+            if (accumulatedData.Processed)
+            {
+                DbUser.Users.Update(accumulatedData.UserTGSetting);
+                DbUser.SaveChanges();
+            }
         }
 
-        public class UpdateProcessing
+        public BotController(IConfiguration configuration, IOptions<ConfigurationBot> settings, ApplicationContext Db)
         {
-
-            public string Text { get; set; }
-            public string CallbackQueryData { get; set; }
-            public TypeReference Reference { get; set; }
-            public ProcessingСondition[] Conditions { get; set; }
-            public ActionProcessing[] Actions { get; set; }
-            //List<ActionProcessing> Actions = new List<ActionProcessing>();
-            // List<ProcessingСondition> Сonditions = new List<ProcessingСondition>() { get; set; }
-        }
-
-        public class ActionProcessing
-        {
-            private string text;
-            private TypeSend method;
-        }
-        public class ProcessingСondition
-        {
-            public object RightValue { get; set; }
-            public TypeReference Reference { get; set; }
-            public string LeftValue { get; set; }
-
+            DbUser = Db;
+            ConfBot = settings.Value;
         }
 
     }
 
 
 
-     
+
 }
